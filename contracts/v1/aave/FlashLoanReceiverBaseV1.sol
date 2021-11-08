@@ -7,8 +7,10 @@ import "../../../interfaces/v1/IFlashLoanReceiverV1.sol";
 import "../../../interfaces/v1/ILendingPoolAddressesProviderV1.sol";
 import "../../utils/Withdrawable.sol";
 
-abstract contract FlashLoanReceiverBaseV1 is IFlashLoanReceiverV1, Withdrawable {
-
+abstract contract FlashLoanReceiverBaseV1 is
+    IFlashLoanReceiverV1,
+    Withdrawable
+{
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -19,15 +21,21 @@ abstract contract FlashLoanReceiverBaseV1 is IFlashLoanReceiverV1, Withdrawable 
         addressesProvider = ILendingPoolAddressesProviderV1(_addressProvider);
     }
 
-    receive() payable external {}
+    receive() external payable {}
 
-    function transferFundsBackToPoolInternal(address _reserve, uint256 _amount) internal {
+    function transferFundsBackToPoolInternal(address _reserve, uint256 _amount)
+        internal
+    {
         address payable core = addressesProvider.getLendingPoolCore();
         transferInternal(core, _reserve, _amount);
     }
 
-    function transferInternal(address payable _destination, address _reserve, uint256 _amount) internal {
-        if(_reserve == ethAddress) {
+    function transferInternal(
+        address payable _destination,
+        address _reserve,
+        uint256 _amount
+    ) internal {
+        if (_reserve == ethAddress) {
             (bool success, ) = _destination.call{value: _amount}("");
             require(success == true, "Couldn't transfer ETH");
             return;
@@ -35,8 +43,12 @@ abstract contract FlashLoanReceiverBaseV1 is IFlashLoanReceiverV1, Withdrawable 
         IERC20(_reserve).safeTransfer(_destination, _amount);
     }
 
-    function getBalanceInternal(address _target, address _reserve) internal view returns(uint256) {
-        if(_reserve == ethAddress) {
+    function getBalanceInternal(address _target, address _reserve)
+        internal
+        view
+        returns (uint256)
+    {
+        if (_reserve == ethAddress) {
             return _target.balance;
         }
         return IERC20(_reserve).balanceOf(_target);

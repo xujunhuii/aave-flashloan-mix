@@ -5,8 +5,10 @@ import "../../interfaces/v1/ILendingPoolAddressesProviderV1.sol";
 import "../../interfaces/v1/ILendingPoolV1.sol";
 
 contract FlashloanV1 is FlashLoanReceiverBaseV1 {
-
-    constructor(address _addressProvider) FlashLoanReceiverBaseV1(_addressProvider) public {}
+    constructor(address _addressProvider)
+        public
+        FlashLoanReceiverBaseV1(_addressProvider)
+    {}
 
     /**
         This function is called after your contract has received the flash loaned amount
@@ -16,18 +18,18 @@ contract FlashloanV1 is FlashLoanReceiverBaseV1 {
         uint256 _amount,
         uint256 _fee,
         bytes calldata _params
-    )
-        external
-        override
-    {
-        require(_amount <= getBalanceInternal(address(this), _reserve), "Invalid balance, was the flashLoan successful?");
+    ) external override {
+        require(
+            _amount <= getBalanceInternal(address(this), _reserve),
+            "Invalid balance, was the flashLoan successful?"
+        );
 
         //
         // Your logic goes here.
         // !! Ensure that *this contract* has enough of `_reserve` funds to payback the `_fee` !!
         //
 
-        uint totalDebt = _amount.add(_fee);
+        uint256 totalDebt = _amount.add(_fee);
         transferFundsBackToPoolInternal(_reserve, totalDebt);
     }
 
@@ -36,9 +38,11 @@ contract FlashloanV1 is FlashLoanReceiverBaseV1 {
      */
     function flashloan(address _asset) public onlyOwner {
         bytes memory data = "";
-        uint amount = 1 ether;
+        uint256 amount = 1 ether;
 
-        ILendingPoolV1 lendingPool = ILendingPoolV1(addressesProvider.getLendingPool());
+        ILendingPoolV1 lendingPool = ILendingPoolV1(
+            addressesProvider.getLendingPool()
+        );
         lendingPool.flashLoan(address(this), _asset, amount, data);
     }
 }
